@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توست نوتیفیکیشن</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <style>
+        /* Toast container styles */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Toast styles */
+        .toast {
+            min-width: 250px;
+            max-width: 350px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            color: white;
+            font-family: Tahoma, sans-serif;
+            font-size: 14px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: right;
+            direction: rtl;
+            opacity: 0;
+            transform: translateX(-100%);
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+            /* Show toast animation */
+            .toast.toast-show {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            /* Hide toast animation */
+            .toast.toast-hide {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+
+            /* Background color styles */
+            .toast.danger {
+                background-image: linear-gradient(to right, #e52d27 0%, #b31217 51%, #e52d27 100%);
+            }
+
+            .toast.success {
+                background-image: linear-gradient(to right, #02AAB0 0%, #00CDAC 51%, #02AAB0 100%);
+            }
+
+            .toast.info {
+                background-image: linear-gradient(15deg, #13547a 0%, #80d0c7 100%);
+            }
+
+            .toast.primary {
+                background-image: linear-gradient(to right, #16222A 0%, #3A6073 51%, #16222A 100%);
+            }
+
+            .toast.warning {
+                background-image: linear-gradient(to right, #FF512F 0%, #F09819 51%, #FF512F 100%);
+            }
+
+        /* Button styles */
+        .btn {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            color: white;
+            cursor: pointer;
+            font-family: Tahoma, sans-serif;
+        }
+
+            .btn.danger {
+                background-color: #e74c3c;
+            }
+
+            .btn.success {
+                background-color: #2ecc71;
+            }
+
+            .btn.info {
+                background-color: #3498db;
+            }
+
+            .btn.primary {
+                background-color: #9b59b6;
+            }
+
+            .btn.warning {
+                background-color: #f1c40f;
+            }
+    </style>
+</head>
+<body>
+    <!-- Buttons to trigger toasts -->
+    <div style="float:right">
+        <button class="btn danger" onclick="Alert('خطای سیستمی رخ داده است!', 'danger', 4000)">خطا</button>
+        <button class="btn success" onclick="Alert('عملیات موفقیت‌آمیز بود!', 'success', 4000)">موفقیت</button>
+        <button class="btn info" onclick="Alert('اطلاعات جدید موجود است.', 'info', 4000)">اطلاع</button>
+        <button class="btn primary" onclick="Alert('اطلاعیه مهم دریافت شد.', 'primary', 4000)">اولیه</button>
+        <button class="btn warning" onclick="Alert('هشدار: منابع در حال اتمام است!', 'warning', 4000)">هشدار</button>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <script>
+        /**
+         * Show a toast notification.
+         * @param {string} text - The message to display.
+         * @param {string} type - The type of toast (danger, success, info, primary, warning).
+         * @param {number} duration - Duration in milliseconds.
+         */
+        function Alert(text, type = "info", duration = 4000) {
+            const validTypes = ["danger", "success", "info", "primary", "warning"];
+            if (!validTypes.includes(type)) {
+                console.error(`Invalid toast type: "${type}". Defaulting to "info".`);
+                type = "info";
+            }
+
+            // Create the toast element
+            const toast = $(`<div class="toast ${type}">${text}</div>`);
+            $("#toast-container").append(toast);
+
+            // Add the show class to trigger the animation
+            setTimeout(() => {
+                toast.addClass("toast-show");
+            }, 10); // Delay to ensure the DOM has been updated
+
+            // Remove the toast after the specified duration
+            setTimeout(() => {
+                toast.removeClass("toast-show").addClass("toast-hide");
+                toast.on("transitionend", function () {
+                    toast.remove();
+                    adjustToasts();
+                });
+            }, duration);
+        }
+
+        /**
+         * Adjust positions of remaining toasts after one is removed.
+         */
+        function adjustToasts() {
+            const toasts = $("#toast-container .toast");
+            toasts.each((index, toast) => {
+                $(toast).css("top", index * ($(toast).outerHeight() + 10));
+            });
+        }
+
+        $(document).ready(function () {
+            Alert("خوش آمدید! این یک پیام خودکار است.", "info", 2000);
+        });
+    </script>
+</body>
+</html>
